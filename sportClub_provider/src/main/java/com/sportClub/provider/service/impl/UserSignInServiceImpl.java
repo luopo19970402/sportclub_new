@@ -35,30 +35,28 @@ public class UserSignInServiceImpl implements UserSignService {
      */
     @Override
     public R findUserSignIn(String token) {
-//        System.err.println("token: "+token);
-//        if(!jedisCore.checkKey(RedisKeyConfig.TOKEN_USER+token)){
-//            System.err.println("true");
-//            //通过token获取用户
-////            User user = JSON.parseObject(jedisCore.get(RedisKeyConfig.TOKEN_USER + token), User.class);
-//            Integer userId=1;
-//            UserSign userSign = userSignDao.findByUserId(userId);
-//            System.err.println(userSign);
-//            //判断用户是否打过卡
-//            if(null!=userSign){
-//                //用户打过卡，返回打卡记录
-//                //获取连续打卡天数
-//                Long countDay = jedisCore.incrKey(RedisKeyConfig.COUNT_DAY_USER + userId);
-//                userSign.setSignCountDays(Integer.parseInt(countDay.toString()));
-//                return R.ok(userSign);
-//            }else {
-//                //用hi
-//                return R.fail("用户暂未打卡");
-//            }
-//        }else {
-//            return R.fail("用户未登录");
-//        }
-        UserSign byUserId = userSignDao.findByUserId(1);
-        return R.ok(byUserId);
+        System.err.println("token: "+token);
+        if(!jedisCore.checkKey(RedisKeyConfig.TOKEN_USER+token)){
+            System.err.println("true");
+            //通过token获取用户
+//            User user = JSON.parseObject(jedisCore.get(RedisKeyConfig.TOKEN_USER + token), User.class);
+            Integer userId=1;
+            UserSign userSign = userSignDao.findByUserId(userId);
+            System.err.println(userSign);
+            //判断用户是否打过卡
+            if(null!=userSign){
+                //用户打过卡，返回打卡记录
+                //获取连续打卡天数
+                Long countDay = jedisCore.incrKey(RedisKeyConfig.COUNT_DAY_USER + userId);
+                userSign.setSignCountDays(Integer.parseInt(countDay.toString()));
+                return R.ok(userSign);
+            }else {
+                //用hi
+                return R.fail("用户暂未打卡");
+            }
+        }else {
+            return R.fail("用户未登录");
+        }
     }
 
     /**

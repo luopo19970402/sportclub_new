@@ -21,12 +21,9 @@ import java.util.List;
  * @create: 2020-06-19 09:48
  */
 public class OssCore {
-    // Endpoint以杭州为例，其它Region请按实际情况填写。
-    private static String endpoint = "https://oss-cn-hangzhou.aliyuncs.com";
-    // 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。
-    // 强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录RAM控制台创建RAM账号。
-    private static String accessKeyId = "LTAI4FzVhyrQc8eKH4ifkE1A";
-    private static String accessKeySecret = "zGUzvaDe6MeLEv4QeABML1ypEn3p22";
+    private static String endpoint = "https://oss-cn-beijing.aliyuncs.com";
+    private static String accessKeyId = "LTAI4G1wVhEp4LYzH2TJVuEN";
+    private static String accessKeySecret = "h2X0QDI1wABognuU5KGGcYKEX0j795";
     // 创建OSSClient实例。
     private static OSS ossClient;
     static {
