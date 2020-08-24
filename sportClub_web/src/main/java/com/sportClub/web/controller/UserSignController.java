@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,5 +34,16 @@ public class UserSignController {
         System.err.println("token："+token);
         return userSignService.findUserSignIn(token);
     }
+
+    @ApiOperation("打卡")
+    @PostMapping("api/userSignIn.do")
+    public R userSignIn(HttpServletRequest request) {
+        String token = request.getHeader(SystemConstant.TOKEN_HEADER);
+        System.err.println("token：" + token);
+        return userSignService.userSignIn(token);
+    }
+
+
+
 
 }
