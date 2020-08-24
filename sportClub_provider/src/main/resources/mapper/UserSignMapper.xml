@@ -5,7 +5,7 @@
 
 <resultMap id="base" type="com.sportClub.pojo.UserSign">
     <id column="sign_id" property="signId"/>
-    <result column="user_id" property="signId"/>
+    <result column="user_id" property="userId"/>
     <result column="sign_datetime" property="signDatetime"/>
     <result column="sign_count_days" property="signCountDays"/>
 </resultMap>

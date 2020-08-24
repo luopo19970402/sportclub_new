@@ -1,5 +1,6 @@
 package com.sportClub.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,7 @@ public class UserSign implements Serializable {
     /**
     * 签到时间
     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date signDatetime;
 
     private static final long serialVersionUID = 1L;
