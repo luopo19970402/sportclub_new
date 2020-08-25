@@ -29,30 +29,39 @@ public class UserSignInServiceImpl implements UserSignService {
     private JedisCore jedisCore;
 
     /**
-     * 查询用户打卡信息
+     * 查询用户签到信息
      * @param token
      * @return
      */
     @Override
     public R findUserSignIn(String token) {
         System.err.println("token: "+token);
-        if(!jedisCore.checkKey(RedisKeyConfig.TOKEN_USER+token)){
+        if(jedisCore.checkKey(RedisKeyConfig.TOKEN_USER+token)){
             System.err.println("true");
             //通过token获取用户
-//            User user = JSON.parseObject(jedisCore.get(RedisKeyConfig.TOKEN_USER + token), User.class);
-            Integer userId=1;
+            User user = JSON.parseObject(jedisCore.get(RedisKeyConfig.TOKEN_USER + token), User.class);
+            Integer userId=user.getUserId();
+            //获取
             UserSign userSign = userSignDao.findByUserId(userId);
             System.err.println(userSign);
-            //判断用户是否打过卡
+            //判断用户是否打签到
             if(null!=userSign){
-                //用户打过卡，返回打卡记录
-                //获取连续打卡天数
-                Long countDay = jedisCore.incrKey(RedisKeyConfig.COUNT_DAY_USER + userId);
-                userSign.setSignCountDays(Integer.parseInt(countDay.toString()));
+                //获取连续签到天数
+                //签到间断：上一次签到时间到现在大于签到的有效期（连续签到时间为0）
+                if(new Date().getTime()-userSign.getSignDatetime().getTime() > isContinuousTime(userId)*1000){
+                    //设置签到天数为0
+                    userSign.setSignCountDays(0);
+                }else {
+                    //签到未间断
+                    int s = Integer.parseInt(jedisCore.get(RedisKeyConfig.COUNT_DAY_USER + userId));
+                    //获取令牌的签到天数并赋值
+                    userSign.setSignCountDays(s);
+                }
+                //返回签到数据
                 return R.ok(userSign);
             }else {
                 //用hi
-                return R.fail("用户暂未打卡");
+                return R.fail("用户暂未签到");
             }
         }else {
             return R.fail("用户未登录");
@@ -60,7 +69,7 @@ public class UserSignInServiceImpl implements UserSignService {
     }
 
     /**
-     * 用户打卡
+     * 用户签到
      * @param token
      * @return
      */
@@ -72,29 +81,30 @@ public class UserSignInServiceImpl implements UserSignService {
             User user = JSON.parseObject(jedisCore.get(RedisKeyConfig.TOKEN_USER + token), User.class);
             Integer userId=user.getUserId();
             UserSign byUserId = userSignDao.findByUserId(userId);
-            //首次打卡
+            //首次签到
             if(null==byUserId){
-                //说明首次打卡 添加打卡数据
+                //说明首次签到 添加签到数据
                 int row = userSignDao.addUserSign(userId);
                 if(row == 1){
                     //生成连续签到令牌
-                    jedisCore.incrKey(RedisKeyConfig.COUNT_DAY_USER + userId);
+                    Long count = jedisCore.incrKey(RedisKeyConfig.COUNT_DAY_USER + userId);
                     //设置有效期
                     jedisCore.expire(RedisKeyConfig.COUNT_DAY_USER+userId,isContinuousTime(userId));
+
                     //添加健身豆
 
                     return R.ok("签到成功");
                 }else {
-                    return R.fail("签到失败,请重试");
+                    return R.fail("服务器异常");
                 }
 
             }else {
-             //下次打卡
-                if(jedisCore.ttl(RedisKeyConfig.COUNT_DAY_USER+userId) < RedisKeyConfig.ONE_DAY){
+             //下次签到
+                if(jedisCore.ttl(RedisKeyConfig.COUNT_DAY_USER+userId) > RedisKeyConfig.ONE_DAY){
                     //表示当天已经打过卡
-                    return R.fail("今日已打卡，明天再来吧");
+                    return R.fail("今日已签到，明天再来吧");
                 }else {
-                    //表示当天未打卡
+                    //表示当天未签到
                     int row = userSignDao.updateSign(userId);
                     if(row == 1){
                         //连续签到天数自动计算
@@ -107,13 +117,19 @@ public class UserSignInServiceImpl implements UserSignService {
                         return R.ok(count);
                     }
                 }
-                return R.fail("用户暂未打卡");
+                return R.fail("服务器异常");
             }
         }else {
             return R.fail("用户未登录");
         }
 
     }
+
+    /**
+     * 设置签到令牌的有效期
+     * @param userId
+     * @return
+     */
     public int isContinuousTime(Integer userId){
         UserSign byUserId = userSignDao.findByUserId(userId);
         Date signDatetime = byUserId.getSignDatetime();
@@ -130,7 +146,7 @@ public class UserSignInServiceImpl implements UserSignService {
         calendar.set(Calendar.SECOND, 0);
         //此时calendar.getTime().getTime()为当天24:00:00的时间戳
 
-        //获取上一次打卡时间到当天24:00:00之间的毫秒数再加上24小时
+        //获取上一次签到时间到当天24:00:00之间的毫秒数再加上24小时
         long time = calendar.getTime().getTime() - signDatetime.getTime();
         //获取秒数
         double t = time * 1.0 / 1000L;
