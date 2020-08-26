@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * @Date: 2020-08-24 20:15
  * @description:
  */
-@Api(tags = "优惠卷")
+@Api(tags = "秒杀")
 @Slf4j
 @RestController
 @RequestMapping("seckill")
@@ -24,15 +24,15 @@ public class OrderFlashsaleController {
     @Autowired
     private OrderFlashsaleService orderFlashsaleService;
 
-    @ApiOperation("查询优惠卷信息")
-    @RequestMapping("/findAll")
+    @ApiOperation("查询秒基本信息（秒杀初始时间，结束时间，商品声誉数量，状态）")
+    @GetMapping("/findAll")
     public R findAll(HttpServletRequest request){
         String token=request.getHeader(SystemConstant.TOKEN_HEADER);
         System.out.println("token"  + token);
         return orderFlashsaleService.findAll(token);
     }
 
-    @RequestMapping("/saveOrder/{id}")
+    @PostMapping("/saveOrder/{id}")
     public R saveOrder(@PathVariable("id") Long id,HttpServletRequest request){
         String token = request.getHeader(SystemConstant.TOKEN_HEADER);
         return orderFlashsaleService.saveOrder(id, token);
