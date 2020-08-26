@@ -27,6 +27,11 @@ public class OntimeCourse implements Serializable {
     private String courseName;
 
     /**
+     * 在线课程视频地址
+     */
+    private String courseUrl;
+
+    /**
     * 在线课程等级Id
     */
     private Integer courseLv;

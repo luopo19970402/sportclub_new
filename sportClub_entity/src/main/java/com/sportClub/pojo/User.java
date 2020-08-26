@@ -65,4 +65,12 @@ public class User implements Serializable {
     private Integer fitnessBean;
 
     private static final long serialVersionUID = 1L;
+
+    public User(Integer userId, String userPhone, String userPwd, String userNickname, Integer fitnessBean) {
+        this.userId = userId;
+        this.userPhone = userPhone;
+        this.userPwd = userPwd;
+        this.userNickname = userNickname;
+        this.fitnessBean = fitnessBean;
+    }
 }

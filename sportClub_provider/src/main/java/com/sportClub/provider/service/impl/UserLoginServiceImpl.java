@@ -34,7 +34,7 @@ public class UserLoginServiceImpl implements UserLoginService {
             User user = userLoginDao.selectPhone(userLoginDto.getPhone());
             if (user != null) {
                 //比较密码
-                if (user.getUserPwd().equals(userLoginDto.getPassword())) {
+                if (JwtUtil.parseJWT(user.getUserPwd()).equals(userLoginDto.getPassword())) {
                     //正确生成令牌 设置有效期 存储到Redis
                     String token = TokenUtil.createToken(user.getUserId());
                     //token存储到Redis
@@ -44,7 +44,7 @@ public class UserLoginServiceImpl implements UserLoginService {
                     return R.ok(token);
                 } else {
                     //错误登录失败
-                    return R.fail("登录失败");
+                    return R.fail("密码错误，登录失败");
                 }
             }
             return R.fail("登录失败");
@@ -63,7 +63,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         if (user != null) {
             return R.fail("手机号已经存在");
         } else {
-            return R.ok();
+            return R.ok("手机号不存在可以注册");
         }
     }
 

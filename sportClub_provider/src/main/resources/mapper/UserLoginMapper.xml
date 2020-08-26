@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sportClub.provider.dao.UserLoginDao">
+    <resultMap id="userMap" type="com.sportClub.pojo.User">
+        <id column="user_id" property="userId"/>
+        <result column="user_phone" property="userPhone"/>
+        <result column="user_pwd" property="userPwd"/>
+        <result column="user_nickname" property="userNickname"/>
+        <result column="sex" property="sex"/>
+        <result column="birthday" property="birthday"/>
+        <result column="height" property="height"/>
+        <result column="weight" property="weight"/>
+        <result column="img" property="img"/>
+        <result column="fitness_bean" property="fitnessBean"/>
+    </resultMap>
+
+    <select id="selectPhone" resultMap="userMap">
+        select * FROM user WHERE user_phone = #{phone}  LIMIT 1;
+    </select>
+
+    <insert id="insert" parameterType="com.sportClub.pojo.User">
+        insert into user(user_phone, user_pwd, user_nickname, fitness_bean)
+        values (#{userPhone,jdbcType=VARCHAR}, #{userPwd,jdbcType=VARCHAR},#{userNickname,jdbcType=VARCHAR}, 0)
+    </insert>
+</mapper>
