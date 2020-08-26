@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sportClub.provider.dao.UserInfoDao">
+    <resultMap id="info" type="com.sportClub.pojo.User">
+        <id column="user_id" property="userId"/>
+        <result column="user_pwd" property="userPwd"/>
+        <result column="user_phone" property="userPhone"/>
+        <result column="user_nickname" property="userNickname"/>
+        <result column="sex" property="sex"/>
+        <result column="birthday" property="birthday"/>
+        <result column="height" property="height"/>
+        <result column="weight" property="weight"/>
+        <result column="img" property="img"/>
+        <result column="fitness_bean" property="fitnessBean"/>
+    </resultMap>
+    <select id="selectUserByPhone" resultMap="info">
+        select * from user_phone=#{UserPhone}
+    </select>
+
+    <update id="updateUserInfo" parameterType="com.sportClub.pojo.User">
+        update user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userNickname!=null">user_nickname=#{userNickname},</if>
+            <if test="img!=null">img=#{img},</if>
+            <if test="sex!=null">sex=#{sex},</if>
+            <if test="birthday!=null">birthday=#{birthday},</if>
+            <if test="height!=null">height=#{height}</if>
+            <if test="weight!=null">weight=#{weight}</if>
+        </trim>
+        WHERE user_phone=#{UserPhone}
+    </update>
+
+</mapper>
